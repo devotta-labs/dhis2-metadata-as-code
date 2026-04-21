@@ -4,6 +4,11 @@ export { defineCategoryCombo, type CategoryCombo } from './categoryCombo.ts'
 export { defineOptionSet, type OptionSet } from './optionSet.ts'
 export { defineDataElement, type DataElement } from './dataElement.ts'
 export { defineDataSet, type DataSet } from './dataSet.ts'
+export { defineOrganisationUnit, type OrganisationUnit } from './organisationUnit.ts'
+export {
+  defineOrganisationUnitLevel,
+  type OrganisationUnitLevel,
+} from './organisationUnitLevel.ts'
 export { defineSchema, type Schema, type AnyHandle } from './schema.ts'
 
 // Re-export shared enums so callers can `import { ValueType } from './lib'`

@@ -1,21 +1,20 @@
 import { defineSchema } from '../lib/index.ts'
-import * as malaria from './malaria.ts'
+import { categories } from './categories/categories.ts'
+import { categoryCombos } from './categories/categoryCombos.ts'
+import { categoryOptions } from './categories/categoryOptions.ts'
+import { dataElements } from './dataElements.ts'
+import { dataSets } from './dataSets.ts'
+import { optionSets } from './optionSets.ts'
+import { organisationUnitLevels } from './organisationUnits/organisationUnitLevels.ts'
+import { organisationUnits } from './organisationUnits/organisationUnits.ts'
 
 export default defineSchema({
-  objects: [
-    malaria.male,
-    malaria.female,
-    malaria.under5,
-    malaria.age5to14,
-    malaria.age15plus,
-    malaria.sex,
-    malaria.ageGroup,
-    malaria.sexAge,
-    malaria.caseClassification,
-    malaria.malariaCases,
-    malaria.malariaDeaths,
-    malaria.malariaTreated,
-    malaria.malariaCaseClass,
-    malaria.malariaMonthly,
-  ],
+  categoryOptions,
+  categories,
+  categoryCombos,
+  optionSets,
+  dataElements,
+  dataSets,
+  organisationUnitLevels,
+  organisationUnits,
 })

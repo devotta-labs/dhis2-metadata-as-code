@@ -9,6 +9,8 @@ export type MetadataKind =
   | 'Option'
   | 'DataElement'
   | 'DataSet'
+  | 'OrganisationUnit'
+  | 'OrganisationUnitLevel'
 
 declare const __kind: unique symbol
 declare const __brand: unique symbol

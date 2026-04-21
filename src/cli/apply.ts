@@ -55,6 +55,9 @@ export async function plan(): Promise<void> {
 }
 
 export async function apply(): Promise<void> {
-  const report = await post(false)
-  printReport(report, 'Apply')
+  // skipValidation=true means DHIS2 doesn't return a populated import summary,
+  // so printing the report yields empty stats. Re-enable once validation is on.
+  await post(false)
+  // printReport(report, 'Apply')
+  console.log('Apply: import succeeded.')
 }

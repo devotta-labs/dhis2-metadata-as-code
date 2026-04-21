@@ -5,6 +5,8 @@ import type { CategoryCombo } from './categoryCombo.ts'
 import type { OptionSet } from './optionSet.ts'
 import type { DataElement } from './dataElement.ts'
 import type { DataSet } from './dataSet.ts'
+import type { OrganisationUnit } from './organisationUnit.ts'
+import type { OrganisationUnitLevel } from './organisationUnitLevel.ts'
 
 export type AnyHandle =
   | Category
@@ -13,13 +15,23 @@ export type AnyHandle =
   | OptionSet
   | DataElement
   | DataSet
+  | OrganisationUnit
+  | OrganisationUnitLevel
 
+// Grouped input — one readonly array per metadata kind. Every field is
+// optional so you only declare the sections you use.
 export type SchemaInput = {
-  objects: readonly AnyHandle[]
+  categoryOptions?: readonly CategoryOption[]
+  categories?: readonly Category[]
+  categoryCombos?: readonly CategoryCombo[]
+  optionSets?: readonly OptionSet[]
+  dataElements?: readonly DataElement[]
+  dataSets?: readonly DataSet[]
+  organisationUnits?: readonly OrganisationUnit[]
+  organisationUnitLevels?: readonly OrganisationUnitLevel[]
 }
 
 export type Schema = {
-  readonly objects: readonly AnyHandle[]
   readonly byKind: Readonly<Record<MetadataKind, readonly Handle<MetadataKind, { code: string }>[]>>
   serialize(): Record<string, unknown[]>
 }
@@ -32,6 +44,8 @@ const PAYLOAD_KEY: Record<MetadataKind, string> = {
   Option: 'options',
   DataElement: 'dataElements',
   DataSet: 'dataSets',
+  OrganisationUnit: 'organisationUnits',
+  OrganisationUnitLevel: 'organisationUnitLevels',
 }
 
 // Assign a stable DHIS2 UID (derived from kind:code) to the top-level object
@@ -111,20 +125,35 @@ export function defineSchema(input: SchemaInput): Schema {
     Option: [],
     DataElement: [],
     DataSet: [],
+    OrganisationUnit: [],
+    OrganisationUnitLevel: [],
   }
 
+  const groups: readonly (readonly AnyHandle[] | undefined)[] = [
+    input.categoryOptions,
+    input.categories,
+    input.categoryCombos,
+    input.optionSets,
+    input.dataElements,
+    input.dataSets,
+    input.organisationUnits,
+    input.organisationUnitLevels,
+  ]
+
   const seen = new Set<string>()
-  for (const handle of input.objects) {
-    const key = `${handle.kind}:${handle.code}`
-    if (seen.has(key)) {
-      throw new Error(`Duplicate ${handle.kind} with code '${handle.code}' in schema.`)
+  for (const group of groups) {
+    if (!group) continue
+    for (const handle of group) {
+      const key = `${handle.kind}:${handle.code}`
+      if (seen.has(key)) {
+        throw new Error(`Duplicate ${handle.kind} with code '${handle.code}' in schema.`)
+      }
+      seen.add(key)
+      byKind[handle.kind].push(handle as Handle<MetadataKind, { code: string }>)
     }
-    seen.add(key)
-    byKind[handle.kind].push(handle as Handle<MetadataKind, { code: string }>)
   }
 
   return {
-    objects: input.objects,
     byKind,
     serialize() {
       const payload: Record<string, unknown[]> = {}
