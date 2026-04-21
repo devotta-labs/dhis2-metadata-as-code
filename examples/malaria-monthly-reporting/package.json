@@ -1,5 +1,5 @@
 {
-  "name": "@devotta-labs/declare-example-malaria",
+  "name": "malaria-monthly-reporting",
   "version": "0.0.1",
   "private": true,
   "description": "Example DHIS2 metadata schema for a malaria monthly reporting program, consuming @devotta-labs/declare.",

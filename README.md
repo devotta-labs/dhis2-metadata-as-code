@@ -5,7 +5,7 @@ Declare DHIS2 metadata (categories, data elements, org units, …) in TypeScript
 This repository is a [Turborepo](https://turborepo.com/) monorepo with two packages:
 
 - [`packages/declare`](./packages/declare) — `@devotta-labs/declare`, the reusable framework (metadata builders, schema, CLI entry point).
-- [`examples/malaria-monthly-reporting`](./examples/malaria-monthly-reporting) — `@devotta-labs/declare-example-malaria`, a concrete example schema (malaria monthly reporting) that consumes the framework.
+- [`examples/malaria-monthly-reporting`](./examples/malaria-monthly-reporting) — `malaria-monthly-reporting`, a concrete example schema that consumes the framework.
 
 ## Requirements
 
@@ -49,8 +49,8 @@ All workspace-aware scripts (`check`, `plan`, `apply`, `typecheck`, `test`)
 delegate to Turbo. To target a single package, use pnpm filters:
 
 ```bash
-pnpm --filter @devotta-labs/declare-example-malaria check
-pnpm --filter @devotta-labs/declare-example-malaria apply
+pnpm --filter malaria-monthly-reporting check
+pnpm --filter malaria-monthly-reporting apply
 ```
 
 `pnpm dhis2:logs` accepts container IDs (handy for agents that want to target a
