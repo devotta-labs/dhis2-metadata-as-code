@@ -19,17 +19,23 @@ function findDotenvFiles(names: readonly string[], start: string = process.cwd()
   return hits
 }
 
-// `.env.local` wins over `.env`, and a file closer to cwd wins over one higher
-// up the tree. dotenv keeps the first definition it sees, so we pass the most
-// specific path first.
-loadDotenv({ path: findDotenvFiles(['.env.local', '.env']), quiet: true })
-
 export type Env = {
   baseUrl: string
   token: string
 }
 
+let dotenvLoaded = false
+
 export function loadEnv(): Env {
+  // `.env.local` wins over `.env`, and a file closer to cwd wins over one
+  // higher up the tree. dotenv keeps the first definition it sees, so we pass
+  // the most specific path first. Deferred until the first call so merely
+  // importing `@devotta-labs/declare` doesn't scan the filesystem or mutate
+  // `process.env`.
+  if (!dotenvLoaded) {
+    loadDotenv({ path: findDotenvFiles(['.env.local', '.env']), quiet: true })
+    dotenvLoaded = true
+  }
   const baseUrl = process.env.DHIS2_BASE_URL
   const token = process.env.DHIS2_TOKEN
   if (!baseUrl) throw new Error('DHIS2_BASE_URL is not set (check .env.local / .env or environment)')
