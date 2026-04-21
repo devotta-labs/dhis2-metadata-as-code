@@ -17,6 +17,12 @@ export const malariaMonthly = defineDataSet({
     { dataElement: malariaTreated },
     { dataElement: malariaCaseClass },
   ],
+  // Public metadata read+write and data read+write so the demo reporter (and
+  // anyone else logged into the demo instance) can see the dataset in the
+  // Data Entry app and submit values against it.
+  sharing: {
+    publicAccess: 'rwrw----',
+  },
 })
 
 export const dataSets = [malariaMonthly]
