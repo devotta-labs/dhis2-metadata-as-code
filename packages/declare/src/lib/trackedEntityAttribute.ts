@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import {
+  AggregationType,
   CodeSchema,
   DescriptionSchema,
   NameSchema,
@@ -24,6 +25,10 @@ export const TrackedEntityAttributeSchema = z.object({
   formName: z.string().max(230).optional(),
   description: DescriptionSchema.optional(),
   valueType: ValueType,
+  // Required in DHIS2 master (non-null column) even though DHIS2's own UI
+  // forms hide it — the REST API will 409 on import without a value. Default
+  // to NONE because TEAs are rarely aggregated like data values.
+  aggregationType: AggregationType.default('NONE'),
   optionSet: refSchema('OptionSet').optional(),
   unique: z.boolean().default(false),
   inherit: z.boolean().default(false),
