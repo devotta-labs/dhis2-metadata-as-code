@@ -1,4 +1,4 @@
-import { Access, Sharing, defineOptionSet } from '../lib/index.ts'
+import { Access, Sharing, defineOptionSet } from '@devotta-labs/declare'
 
 export const caseClassification = defineOptionSet({
   code: 'MAL_CASE_CLASS',

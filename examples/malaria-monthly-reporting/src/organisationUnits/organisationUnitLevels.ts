@@ -1,4 +1,4 @@
-import { defineOrganisationUnitLevel } from '../../lib/index.ts'
+import { defineOrganisationUnitLevel } from '@devotta-labs/declare'
 
 export const nationLevel = defineOrganisationUnitLevel({
   code: 'OU_LEVEL_NATION',

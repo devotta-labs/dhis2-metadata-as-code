@@ -1,4 +1,4 @@
-import { Access, Sharing, defineDataSet } from '../lib/index.ts'
+import { Access, Sharing, defineDataSet } from '@devotta-labs/declare'
 import {
   malariaCaseClass,
   malariaCases,

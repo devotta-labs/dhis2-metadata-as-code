@@ -1,3 +1,4 @@
+import type { Schema } from '../lib/schema.ts'
 import { check } from './check.ts'
 import { apply, plan } from './apply.ts'
 
@@ -9,18 +10,18 @@ Commands:
   apply   Submit the schema to DHIS2 and commit
 `
 
-async function main(): Promise<void> {
-  const cmd = process.argv[2]
+export async function runCli(schema: Schema, argv: readonly string[] = process.argv.slice(2)): Promise<void> {
+  const cmd = argv[0]
   try {
     switch (cmd) {
       case 'check':
-        await check()
+        await check(schema)
         break
       case 'plan':
-        await plan()
+        await plan(schema)
         break
       case 'apply':
-        await apply()
+        await apply(schema)
         break
       case undefined:
       case '-h':
@@ -37,5 +38,3 @@ async function main(): Promise<void> {
     process.exit(1)
   }
 }
-
-await main()

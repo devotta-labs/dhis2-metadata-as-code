@@ -1,4 +1,4 @@
-import { Access, Sharing, defineCategoryOption } from '../../lib/index.ts'
+import { Access, Sharing, defineCategoryOption } from '@devotta-labs/declare'
 
 // CategoryOption ACL gates per-disaggregation data capture — the demo
 // reporter needs rwrw---- on every option in every combo they submit

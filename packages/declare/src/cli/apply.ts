@@ -1,8 +1,8 @@
-import schema from '../metadata/schema.ts'
+import type { Schema } from '../lib/schema.ts'
 import { loadEnv, type Env } from './env.ts'
 import { printReport, type ImportReport } from './report.ts'
 
-async function post(dryRun: boolean): Promise<ImportReport> {
+async function post(schema: Schema, dryRun: boolean): Promise<ImportReport> {
   const env = loadEnv()
   const url = new URL('/api/metadata', env.baseUrl)
   url.searchParams.set('importStrategy', 'CREATE_AND_UPDATE')
@@ -49,15 +49,15 @@ async function post(dryRun: boolean): Promise<ImportReport> {
   return envelope.response ?? envelope
 }
 
-export async function plan(): Promise<void> {
-  const report = await post(true)
+export async function plan(schema: Schema): Promise<void> {
+  const report = await post(schema, true)
   printReport(report, 'Plan (dry-run)')
 }
 
-export async function apply(): Promise<void> {
+export async function apply(schema: Schema): Promise<void> {
   // skipValidation=true means DHIS2 doesn't return a populated import summary,
   // so printing the report yields empty stats. Re-enable once validation is on.
-  await post(false)
+  await post(schema, false)
   // printReport(report, 'Apply')
   console.log('Apply: import succeeded.')
 
