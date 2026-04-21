@@ -1,0 +1,48 @@
+# Local empty DHIS2 stack for developing against the metadata-as-code CLI.
+# NOT for production use. Derived from dhis2/dhis2-core's docker-compose.yml.
+#
+# Bring up / tear down via scripts/dhis2-up.sh and scripts/dhis2-down.sh
+# (or pnpm dhis2:up / dhis2:down).
+
+name: dhis2-mac
+
+services:
+  web:
+    image: "${DHIS2_IMAGE:-dhis2/core-dev:latest}"
+    volumes:
+      - ./dhis.conf:/opt/dhis2/dhis.conf:ro
+      - ./log4j2.xml:/opt/dhis2/log4j2.xml:ro
+    environment:
+      JAVA_TOOL_OPTIONS: "-Dlog4j2.configurationFile=/opt/dhis2/log4j2.xml"
+      DB_HOSTNAME: "${DB_HOSTNAME:-db}"
+      DB_NAME: "${DB_NAME:-dhis}"
+      DB_USERNAME: "${DB_USERNAME:-dhis}"
+      DB_PASSWORD: "${DB_PASSWORD:-dhis}"
+    ports:
+      - "127.0.0.1:8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: ghcr.io/baosystems/postgis:12-3.3
+    environment:
+      POSTGRES_USER: "${DB_USERNAME:-dhis}"
+      POSTGRES_DB: "${DB_NAME:-dhis}"
+      POSTGRES_PASSWORD: "${DB_PASSWORD:-dhis}"
+      PGPASSWORD: "${DB_PASSWORD:-dhis}"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:5432:5432"
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - 'psql --no-password --quiet --username $$POSTGRES_USER postgres://127.0.0.1/$$POSTGRES_DB -p 5432 --command "SELECT ''ok''" > /dev/null'
+      start_period: 120s
+      interval: 1s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  db-data: {}

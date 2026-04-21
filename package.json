@@ -8,7 +8,10 @@
     "plan": "tsx src/cli/index.ts plan",
     "apply": "tsx src/cli/index.ts apply",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "dhis2:up": "bash scripts/dhis2-up.sh",
+    "dhis2:down": "bash scripts/dhis2-down.sh",
+    "dhis2:logs": "bash scripts/pull-logs.sh"
   },
   "dependencies": {
     "dotenv": "^17.4.2",
