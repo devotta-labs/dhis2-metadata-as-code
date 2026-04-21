@@ -4,23 +4,21 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "check": "tsx src/cli/index.ts check",
-    "plan": "tsx src/cli/index.ts plan",
-    "apply": "tsx src/cli/index.ts apply",
-    "typecheck": "tsc --noEmit",
-    "test": "vitest run",
+    "check": "turbo run check",
+    "plan": "turbo run plan",
+    "apply": "turbo run apply",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
     "dhis2:up": "bash scripts/dhis2-up.sh",
     "dhis2:down": "bash scripts/dhis2-down.sh",
     "dhis2:logs": "bash scripts/pull-logs.sh"
   },
-  "dependencies": {
-    "dotenv": "^17.4.2",
-    "zod": "^3.23.8"
-  },
   "devDependencies": {
     "@types/node": "^22.9.0",
     "tsx": "^4.19.2",
+    "turbo": "^2.5.8",
     "typescript": "^5.6.3",
     "vitest": "^4.1.4"
-  }
+  },
+  "packageManager": "pnpm@10.0.0"
 }

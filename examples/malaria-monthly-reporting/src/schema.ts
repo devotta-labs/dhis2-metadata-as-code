@@ -1,4 +1,4 @@
-import { defineSchema } from '../lib/index.ts'
+import { defineSchema } from '@devotta-labs/dhis2-metadata-as-code'
 import { categories } from './categories/categories.ts'
 import { categoryCombos } from './categories/categoryCombos.ts'
 import { categoryOptions } from './categories/categoryOptions.ts'

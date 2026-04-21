@@ -1,4 +1,4 @@
-import { Access, Sharing, defineCategoryCombo } from '../../lib/index.ts'
+import { Access, Sharing, defineCategoryCombo } from '@devotta-labs/dhis2-metadata-as-code'
 import { ageGroup, sex } from './categories.ts'
 
 export const sexAge = defineCategoryCombo({

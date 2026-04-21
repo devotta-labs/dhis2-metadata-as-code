@@ -1,4 +1,4 @@
-import { Access, Sharing, defineDataElement } from '../lib/index.ts'
+import { Access, Sharing, defineDataElement } from '@devotta-labs/dhis2-metadata-as-code'
 import { sexAge } from './categories/categoryCombos.ts'
 import { caseClassification } from './optionSets.ts'
 
