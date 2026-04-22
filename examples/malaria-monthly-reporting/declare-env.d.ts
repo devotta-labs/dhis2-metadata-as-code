@@ -5,7 +5,7 @@
 // that version.
 //
 // It is refreshed whenever you run `declare-cli init`, `typegen`,
-// `check`, `plan`, or `apply`. Commit it alongside declare.config.ts so
+// or `check`. Commit it alongside declare.config.ts so
 // everyone on the team compiles against the same DHIS2 version.
 
 import '@devotta-labs/declare'
