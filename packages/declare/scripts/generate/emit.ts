@@ -105,6 +105,20 @@ function targetSuffix(target: Target): string {
   return target.replace('.', '_')
 }
 
+/**
+ * The JSON key DHIS2 actually reads during a metadata import. For COLLECTION
+ * properties this is `collectionName` (e.g. DataSet.organisationUnits,
+ * Program.programTrackedEntityAttributes) — using `fieldName` would emit the
+ * Java field name instead (`sources`, `programAttributes`) which the API
+ * silently ignores on import.
+ */
+function apiFieldName(prop: SnapshotProperty): string {
+  if (prop.propertyType === 'COLLECTION' && prop.collectionName) {
+    return prop.collectionName
+  }
+  return prop.fieldName ?? prop.name
+}
+
 /** Emit `generated/enums.ts` — one z.enum per (enum, target) + a union. */
 export function emitEnums(enums: readonly EnumDef[]): string {
   const parts: string[] = [BANNER, "import { z } from 'zod'", '']
@@ -153,7 +167,7 @@ export function emitEntity(
         usedEnums.add(enumName(prop))
       }
       const optional = prop.required === true ? '' : '.optional()'
-      lines.push(`  ${prop.fieldName ?? prop.name}: ${expr}${optional},`)
+      lines.push(`  ${apiFieldName(prop)}: ${expr}${optional},`)
     }
     const body = lines.length === 0 ? '' : '\n' + lines.join('\n') + '\n'
     perTargetBlocks.push(
@@ -239,15 +253,43 @@ export function emitRuntime(): string {
     '  current = target',
     '}',
     '',
-    '/** Run `fn` with `target` active, then restore the previous value. */',
+    '/**',
+    ' * Run `fn` with `target` active, then restore the previous value. Works',
+    ' * for both sync and async callbacks: if `fn` returns a thenable, the',
+    ' * previous target is restored when the promise settles rather than',
+    ' * synchronously, so `defineX()` calls after an `await` still see `target`.',
+    ' */',
     'export function withTarget<T>(target: Target, fn: () => T): T {',
     '  const prev = current',
     '  current = target',
     '  try {',
-    '    return fn()',
-    '  } finally {',
+    '    const result = fn()',
+    '    if (isThenable(result)) {',
+    '      return result.then(',
+    '        (value) => {',
+    '          current = prev',
+    '          return value',
+    '        },',
+    '        (err) => {',
+    '          current = prev',
+    '          throw err',
+    '        },',
+    '      ) as T',
+    '    }',
     '    current = prev',
+    '    return result',
+    '  } catch (err) {',
+    '    current = prev',
+    '    throw err',
     '  }',
+    '}',
+    '',
+    'function isThenable<T>(value: T): value is T & PromiseLike<unknown> {',
+    '  return (',
+    '    value !== null &&',
+    '    (typeof value === "object" || typeof value === "function") &&',
+    "    typeof (value as { then?: unknown }).then === 'function'",
+    '  )',
     '}',
     '',
   ].join('\n')

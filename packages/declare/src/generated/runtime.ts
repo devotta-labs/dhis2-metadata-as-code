@@ -22,13 +22,41 @@ export function setTarget(target: Target): void {
   current = target
 }
 
-/** Run `fn` with `target` active, then restore the previous value. */
+/**
+ * Run `fn` with `target` active, then restore the previous value. Works
+ * for both sync and async callbacks: if `fn` returns a thenable, the
+ * previous target is restored when the promise settles rather than
+ * synchronously, so `defineX()` calls after an `await` still see `target`.
+ */
 export function withTarget<T>(target: Target, fn: () => T): T {
   const prev = current
   current = target
   try {
-    return fn()
-  } finally {
+    const result = fn()
+    if (isThenable(result)) {
+      return result.then(
+        (value) => {
+          current = prev
+          return value
+        },
+        (err) => {
+          current = prev
+          throw err
+        },
+      ) as T
+    }
     current = prev
+    return result
+  } catch (err) {
+    current = prev
+    throw err
   }
+}
+
+function isThenable<T>(value: T): value is T & PromiseLike<unknown> {
+  return (
+    value !== null &&
+    (typeof value === "object" || typeof value === "function") &&
+    typeof (value as { then?: unknown }).then === 'function'
+  )
 }

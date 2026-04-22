@@ -18,16 +18,20 @@ function filterProperties(
 ): readonly SnapshotProperty[] {
   if (!schema) return []
   const skipEntity = ENTITY_SKIP_FIELDS[kind]
-  const props = schema.properties.filter(
-    (p) =>
-      p.persisted === true &&
-      p.owner === true &&
-      p.writable === true &&
-      !GLOBAL_SKIP_FIELDS.has(p.name) &&
-      !GLOBAL_SKIP_FIELDS.has(p.fieldName ?? p.name) &&
-      !skipEntity.has(p.name) &&
-      !skipEntity.has(p.fieldName ?? p.name),
-  )
+  const props = schema.properties.filter((p) => {
+    if (p.persisted !== true || p.owner !== true || p.writable !== true) return false
+    // Match against every alias the snapshot might use, so skip lists can be
+    // written in whichever form reads best (Java `fieldName`, API
+    // `collectionName`, or the canonical `name`).
+    const aliases: readonly string[] = [
+      p.name,
+      p.fieldName ?? p.name,
+      p.collectionName ?? p.name,
+    ]
+    if (aliases.some((a) => GLOBAL_SKIP_FIELDS.has(a))) return false
+    if (aliases.some((a) => skipEntity.has(a))) return false
+    return true
+  })
   // Stable order — snapshots aren't alphabetical; sorting makes diffs tiny.
   return [...props].sort((a, b) => a.name.localeCompare(b.name))
 }

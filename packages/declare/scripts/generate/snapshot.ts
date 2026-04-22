@@ -20,6 +20,15 @@ export type SnapshotPropertyType =
 export type SnapshotProperty = {
   readonly name: string
   readonly fieldName?: string
+  /**
+   * JSON serialization key for COLLECTION properties. This is the name DHIS2
+   * actually accepts in the metadata import API — `fieldName` is just the Java
+   * field name and often differs (e.g. DataSet: collectionName="organisationUnits",
+   * fieldName="sources"; Program: collectionName="programTrackedEntityAttributes",
+   * fieldName="programAttributes"). Always prefer this over fieldName for
+   * COLLECTION properties.
+   */
+  readonly collectionName?: string | null
   readonly propertyType: SnapshotPropertyType
   readonly itemPropertyType?: SnapshotPropertyType | null
   readonly klass?: string | null
