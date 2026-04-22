@@ -33,9 +33,9 @@ Run from any directory inside a project (the CLI walks up to find `declare.confi
 
 | Command | What it does |
 | --- | --- |
-| `declare-cli start` | Boot local DHIS2, wait until ready, apply the schema, run post-import maintenance. |
+| `declare-cli start` | Boot local DHIS2, wait until ready, snapshot the empty post-migration DB as `dhis_pristine` (first run only), apply the schema, run post-import maintenance. |
 | `declare-cli stop` | Stop the stack and wipe its DB volume. |
-| `declare-cli reset` | `stop` then `start`. |
+| `declare-cli reset` | Fast reset: restore `dhis` from the `dhis_pristine` snapshot and re-apply the schema (no Flyway, no cold Tomcat boot). Pass `--hard` to tear down volumes and rebuild the snapshot from scratch. Auto-falls back to `--hard` if the snapshot is missing or was captured against a different DHIS2 image. |
 | `declare-cli status` | Show whether the local stack is running. |
 | `declare-cli logs [--web\|--db] [--follow\|-f]` | Tail container logs. |
 | `declare-cli check` | Validate the schema locally (no network). |

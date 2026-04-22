@@ -21,7 +21,7 @@ ${pc.bold('Project lifecycle:')}
 ${pc.bold('Local DHIS2 stack:')}
   ${pc.cyan('start')}                start local DHIS2 and apply the schema
   ${pc.cyan('stop')}                 stop local DHIS2 and wipe its database
-  ${pc.cyan('reset')}                alias for ${pc.cyan('stop')} then ${pc.cyan('start')}
+  ${pc.cyan('reset')} [--hard]       fast reset via pristine DB snapshot (--hard to rebuild from scratch)
   ${pc.cyan('status')}               show whether the local stack is running
   ${pc.cyan('logs')} [--web|--db]    tail container logs (use --follow to stream)
 

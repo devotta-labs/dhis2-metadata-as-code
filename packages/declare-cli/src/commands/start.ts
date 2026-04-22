@@ -8,6 +8,7 @@ import {
   waitUntilReady,
   webContainerState,
 } from '../docker.ts'
+import { createPristineSnapshot, pristineStatus, withWebStopped } from '../snapshot.ts'
 import { ui, pc } from '../ui.ts'
 import { applyLoaded } from './apply.ts'
 
@@ -20,6 +21,30 @@ export function stackEnvFor(loaded: LoadedConfig): StackEnv {
 
 export function baseUrlFor(loaded: LoadedConfig): string {
   return `http://localhost:${loaded.config.local.port}`
+}
+
+async function ensurePristineSnapshot(env: StackEnv, baseUrl: string): Promise<void> {
+  const status = await pristineStatus(env)
+
+  if (status.kind === 'fresh') return
+
+  const s = spinner()
+  if (status.kind === 'missing') {
+    s.start('Capturing pristine DB snapshot')
+  } else {
+    s.start(
+      `Refreshing pristine DB snapshot (image changed: ${status.recordedImage || '(unset)'} → ${status.currentImage})`,
+    )
+  }
+  try {
+    await withWebStopped(env, () => createPristineSnapshot(env))
+    // web was just restarted; wait for it to come back before handing off to apply
+    await waitUntilReady(baseUrl)
+  } catch (err) {
+    s.stop('Snapshot capture failed', 1)
+    throw err
+  }
+  s.stop('Pristine snapshot ready')
 }
 
 export async function start(loaded: LoadedConfig, _args: readonly string[]): Promise<void> {
@@ -64,6 +89,8 @@ export async function start(loaded: LoadedConfig, _args: readonly string[]): Pro
     throw err
   }
   s.stop(`DHIS2 ready at ${baseUrl}`)
+
+  await ensurePristineSnapshot(env, baseUrl)
 
   await applyLoaded(loaded, { silent: true })
 
