@@ -1,0 +1,93 @@
+// AUTO-GENERATED — do not edit by hand.
+//
+// Source: packages/declare/snapshots/schemas-<target>.json
+// Tool:   packages/declare/scripts/generate.ts
+//
+// Re-run `pnpm --filter @devotta-labs/declare gen:schemas` to refresh.
+
+import { z } from 'zod'
+import { refSchema } from '../lib/core.ts'
+import { AggregationType_2_40, AggregationType_2_41, AggregationType_2_42, QueryOperator_2_40, QueryOperator_2_41, QueryOperator_2_42, ValueType_2_40, ValueType_2_41, ValueType_2_42 } from './enums.ts'
+
+export const TrackedEntityAttributeBase_2_40 = z.object({
+  aggregationType: AggregationType_2_40,
+  code: z.string().max(50).optional(),
+  confidential: z.boolean().optional(),
+  description: z.string().optional(),
+  displayInListNoProgram: z.boolean().optional(),
+  displayOnVisitSchedule: z.boolean().optional(),
+  expression: z.string().max(255).optional(),
+  fieldMask: z.string().max(255).optional(),
+  formName: z.string().optional(),
+  generated: z.boolean().optional(),
+  inherit: z.boolean().optional(),
+  name: z.string().max(230),
+  optionSet: refSchema('OptionSet').optional(),
+  orgunitScope: z.boolean().optional(),
+  pattern: z.string().max(255).optional(),
+  shortName: z.string().max(50),
+  skipSynchronization: z.boolean().optional(),
+  sortOrderInListNoProgram: z.number().int().optional(),
+  sortOrderInVisitSchedule: z.number().int().optional(),
+  unique: z.boolean().optional(),
+  valueType: ValueType_2_40,
+})
+
+export const TrackedEntityAttributeBase_2_41 = z.object({
+  aggregationType: AggregationType_2_41,
+  code: z.string().max(50).optional(),
+  confidential: z.boolean().optional(),
+  description: z.string().optional(),
+  displayInListNoProgram: z.boolean().optional(),
+  displayOnVisitSchedule: z.boolean().optional(),
+  expression: z.string().max(255).optional(),
+  fieldMask: z.string().max(255).optional(),
+  formName: z.string().optional(),
+  generated: z.boolean().optional(),
+  inherit: z.boolean().optional(),
+  name: z.string().max(230),
+  optionSet: refSchema('OptionSet').optional(),
+  orgunitScope: z.boolean().optional(),
+  pattern: z.string().max(255).optional(),
+  shortName: z.string().max(50),
+  skipSynchronization: z.boolean().optional(),
+  sortOrderInListNoProgram: z.number().int().optional(),
+  sortOrderInVisitSchedule: z.number().int().optional(),
+  unique: z.boolean().optional(),
+  valueType: ValueType_2_41,
+})
+
+export const TrackedEntityAttributeBase_2_42 = z.object({
+  aggregationType: AggregationType_2_42,
+  blockedSearchOperators: z.array(z.string()).optional(),
+  code: z.string().max(50).optional(),
+  confidential: z.boolean().optional(),
+  description: z.string().optional(),
+  displayInListNoProgram: z.boolean().optional(),
+  displayOnVisitSchedule: z.boolean().optional(),
+  expression: z.string().max(255).optional(),
+  fieldMask: z.string().max(255).optional(),
+  formName: z.string().optional(),
+  generated: z.boolean().optional(),
+  inherit: z.boolean().optional(),
+  minCharactersToSearch: z.number().int().optional(),
+  name: z.string().max(230),
+  optionSet: refSchema('OptionSet').optional(),
+  orgunitScope: z.boolean().optional(),
+  pattern: z.string().max(255).optional(),
+  preferredSearchOperator: QueryOperator_2_42.optional(),
+  shortName: z.string().max(50),
+  skipAnalytics: z.boolean().optional(),
+  skipSynchronization: z.boolean().optional(),
+  sortOrderInListNoProgram: z.number().int().optional(),
+  sortOrderInVisitSchedule: z.number().int().optional(),
+  trigramIndexable: z.boolean(),
+  unique: z.boolean().optional(),
+  valueType: ValueType_2_42,
+})
+
+export const TrackedEntityAttributeBaseByTarget = {
+  '2.40': TrackedEntityAttributeBase_2_40,
+  '2.41': TrackedEntityAttributeBase_2_41,
+  '2.42': TrackedEntityAttributeBase_2_42,
+} as const

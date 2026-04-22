@@ -1,0 +1,69 @@
+// AUTO-GENERATED — do not edit by hand.
+//
+// Source: packages/declare/snapshots/schemas-<target>.json
+// Tool:   packages/declare/scripts/generate.ts
+//
+// Re-run `pnpm --filter @devotta-labs/declare gen:schemas` to refresh.
+
+import { z } from 'zod'
+import { refSchema } from '../lib/core.ts'
+
+export const OrganisationUnitBase_2_40 = z.object({
+  address: z.string().max(255).optional(),
+  closedDate: z.string().optional(),
+  code: z.string().max(50).optional(),
+  comment: z.string().optional(),
+  contactPerson: z.string().max(255).optional(),
+  description: z.string().optional(),
+  email: z.string().email().optional(),
+  hierarchyLevel: z.string().optional(),
+  name: z.string().max(230),
+  openingDate: z.string(),
+  parent: refSchema('OrganisationUnit').optional(),
+  path: z.string().max(255).optional(),
+  phoneNumber: z.string().optional(),
+  shortName: z.string().max(50),
+  url: z.string().url().optional(),
+})
+
+export const OrganisationUnitBase_2_41 = z.object({
+  address: z.string().max(255).optional(),
+  closedDate: z.string().optional(),
+  code: z.string().max(50).optional(),
+  comment: z.string().optional(),
+  contactPerson: z.string().max(255).optional(),
+  description: z.string().optional(),
+  email: z.string().email().optional(),
+  hierarchyLevel: z.number().int().optional(),
+  name: z.string().max(230),
+  openingDate: z.string(),
+  parent: refSchema('OrganisationUnit').optional(),
+  path: z.string().max(255).optional(),
+  phoneNumber: z.string().optional(),
+  shortName: z.string().max(50),
+  url: z.string().url().optional(),
+})
+
+export const OrganisationUnitBase_2_42 = z.object({
+  address: z.string().max(255).optional(),
+  closedDate: z.string().optional(),
+  code: z.string().max(50).optional(),
+  comment: z.string().optional(),
+  contactPerson: z.string().max(255).optional(),
+  description: z.string().optional(),
+  email: z.string().email().optional(),
+  hierarchyLevel: z.number().int().optional(),
+  name: z.string().max(230),
+  openingDate: z.string(),
+  parent: refSchema('OrganisationUnit').optional(),
+  path: z.string().max(255).optional(),
+  phoneNumber: z.string().optional(),
+  shortName: z.string().max(50),
+  url: z.string().url().optional(),
+})
+
+export const OrganisationUnitBaseByTarget = {
+  '2.40': OrganisationUnitBase_2_40,
+  '2.41': OrganisationUnitBase_2_41,
+  '2.42': OrganisationUnitBase_2_42,
+} as const
