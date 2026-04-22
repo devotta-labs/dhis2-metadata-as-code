@@ -12,7 +12,7 @@ export const visitStage = defineProgramStage({
   sortOrder: 1,
   repeatable: false,
   autoGenerateEvent: true,
-  openAfterEnrollment: true,
+  openAfterEnrollment: false,
   validationStrategy: 'ON_COMPLETE',
   executionDateLabel: 'Visit date',
   programStageDataElements: [
@@ -35,7 +35,7 @@ export const examplePrograms = defineProgram({
   displayFrontPageList: true,
   displayIncidentDate: false,
   onlyEnrollOnce: false,
-  useFirstStageDuringRegistration: true,
+  useFirstStageDuringRegistration: false,
   accessLevel: 'OPEN',
   minAttributesRequiredToSearch: 1,
   enrollmentDateLabel: 'Enrollment date',
