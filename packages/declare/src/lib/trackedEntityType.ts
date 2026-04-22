@@ -1,8 +1,11 @@
 import { z } from 'zod'
+import { TrackedEntityTypeBaseByTarget } from '../generated/trackedEntityType.ts'
+import { FeatureTypeByTarget } from '../generated/enums.ts'
+import { getTarget, type Target } from '../generated/runtime.ts'
+import type { CurrentTarget } from './currentTarget.ts'
 import {
   CodeSchema,
   DescriptionSchema,
-  FeatureType,
   NameSchema,
   ShortNameSchema,
   makeHandle,
@@ -19,13 +22,13 @@ const TrackedEntityTypeAttributeSchema = z.object({
   searchable: z.boolean().default(false),
 })
 
-export const TrackedEntityTypeSchema = z.object({
+const overridesFor = (target: Target) => ({
   code: CodeSchema,
   name: NameSchema,
   shortName: ShortNameSchema.optional(),
   description: DescriptionSchema.optional(),
   formName: z.string().max(230).optional(),
-  featureType: FeatureType.default('NONE'),
+  featureType: FeatureTypeByTarget[target].default('NONE'),
   trackedEntityTypeAttributes: z.array(TrackedEntityTypeAttributeSchema).optional(),
   minAttributesRequiredToSearch: z.number().int().min(0).default(1),
   maxTeiCountToReturn: z.number().int().min(0).default(0),
@@ -33,15 +36,22 @@ export const TrackedEntityTypeSchema = z.object({
   sharing: SharingSchema.optional(),
 })
 
-export type TrackedEntityTypeInput = z.infer<typeof TrackedEntityTypeSchema>
+const SCHEMAS = {
+  '2.40': TrackedEntityTypeBaseByTarget['2.40'].extend(overridesFor('2.40')),
+  '2.41': TrackedEntityTypeBaseByTarget['2.41'].extend(overridesFor('2.41')),
+  '2.42': TrackedEntityTypeBaseByTarget['2.42'].extend(overridesFor('2.42')),
+} as const
+
+// Input/output types are narrowed to the target the user configured via
+// `declare-cli typegen`. Without typegen, CurrentTarget falls back to the
+// full Target union.
+export type TrackedEntityTypeInput = z.input<(typeof SCHEMAS)[CurrentTarget]>
 export type TrackedEntityType = Handle<
   'TrackedEntityType',
-  TrackedEntityTypeInput & { shortName: string }
+  z.output<(typeof SCHEMAS)[CurrentTarget]> & { shortName: string }
 >
 
-export function defineTrackedEntityType(
-  input: z.input<typeof TrackedEntityTypeSchema>,
-): TrackedEntityType {
-  const parsed = TrackedEntityTypeSchema.parse(input)
+export function defineTrackedEntityType(input: TrackedEntityTypeInput): TrackedEntityType {
+  const parsed = SCHEMAS[getTarget()].parse(input) as z.output<(typeof SCHEMAS)[CurrentTarget]>
   return makeHandle('TrackedEntityType', withDerivedShortName(parsed))
 }

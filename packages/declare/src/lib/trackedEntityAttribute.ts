@@ -1,28 +1,35 @@
 import { z } from 'zod'
+import { TrackedEntityAttributeBaseByTarget } from '../generated/trackedEntityAttribute.ts'
+import { AggregationTypeByTarget } from '../generated/enums.ts'
+import { getTarget, type Target } from '../generated/runtime.ts'
+import type { CurrentTarget } from './currentTarget.ts'
 import {
-  AggregationType,
   CodeSchema,
   DescriptionSchema,
   NameSchema,
   ShortNameSchema,
-  ValueType,
   makeHandle,
+  optionSetValueTypeMessage,
+  optionSetValueTypeRefine,
   refSchema,
   withDerivedShortName,
   type Handle,
 } from './core.ts'
 import { SharingSchema } from './sharing.ts'
 
-export const TrackedEntityAttributeSchema = z.object({
+// Re-declaring `valueType` here with the unversioned `ValueType` enum silently
+// re-admits values that the target-specific base rejects (e.g. TRACKER_ASSOCIATE
+// was removed in 2.42). Defaults/modifiers on CONSTANT fields therefore pull
+// from `<Enum>ByTarget[target]` instead of the union.
+const overridesFor = (target: Target) => ({
   code: CodeSchema,
   name: NameSchema,
   shortName: ShortNameSchema.optional(),
   formName: z.string().max(230).optional(),
   description: DescriptionSchema.optional(),
-  valueType: ValueType,
   // Non-null column server-side — import 409s without a value, even though the
   // DHIS2 UI hides the field. Default NONE since TEAs are rarely aggregated.
-  aggregationType: AggregationType.default('NONE'),
+  aggregationType: AggregationTypeByTarget[target].default('NONE'),
   optionSet: refSchema('OptionSet').optional(),
   unique: z.boolean().default(false),
   inherit: z.boolean().default(false),
@@ -34,18 +41,35 @@ export const TrackedEntityAttributeSchema = z.object({
   displayInListNoProgram: z.boolean().default(false),
   sortOrderInListNoProgram: z.number().int().min(0).optional(),
   skipSynchronization: z.boolean().default(false),
+  // New in 2.42 — server-defaulted, authors don't set this directly.
+  trigramIndexable: z.boolean().default(false),
   sharing: SharingSchema.optional(),
 })
 
-export type TrackedEntityAttributeInput = z.infer<typeof TrackedEntityAttributeSchema>
+const SCHEMAS = {
+  '2.40': TrackedEntityAttributeBaseByTarget['2.40']
+    .extend(overridesFor('2.40'))
+    .refine(optionSetValueTypeRefine, optionSetValueTypeMessage),
+  '2.41': TrackedEntityAttributeBaseByTarget['2.41']
+    .extend(overridesFor('2.41'))
+    .refine(optionSetValueTypeRefine, optionSetValueTypeMessage),
+  '2.42': TrackedEntityAttributeBaseByTarget['2.42']
+    .extend(overridesFor('2.42'))
+    .refine(optionSetValueTypeRefine, optionSetValueTypeMessage),
+} as const
+
+// Input/output types are narrowed to the target the user configured via
+// `declare-cli typegen` (writes declare-env.d.ts → merges ConfiguredTargets).
+// Without typegen, CurrentTarget falls back to the full Target union.
+export type TrackedEntityAttributeInput = z.input<(typeof SCHEMAS)[CurrentTarget]>
 export type TrackedEntityAttribute = Handle<
   'TrackedEntityAttribute',
-  TrackedEntityAttributeInput & { shortName: string }
+  z.output<(typeof SCHEMAS)[CurrentTarget]> & { shortName: string }
 >
 
 export function defineTrackedEntityAttribute(
-  input: z.input<typeof TrackedEntityAttributeSchema>,
+  input: TrackedEntityAttributeInput,
 ): TrackedEntityAttribute {
-  const parsed = TrackedEntityAttributeSchema.parse(input)
+  const parsed = SCHEMAS[getTarget()].parse(input) as z.output<(typeof SCHEMAS)[CurrentTarget]>
   return makeHandle('TrackedEntityAttribute', withDerivedShortName(parsed))
 }

@@ -1,0 +1,51 @@
+// AUTO-GENERATED — do not edit by hand.
+//
+// Source: packages/declare/snapshots/schemas-<target>.json
+// Tool:   packages/declare/scripts/generate.ts
+//
+// Re-run `pnpm --filter @devotta-labs/declare gen:schemas` to refresh.
+
+import { z } from 'zod'
+import { FeatureType_2_40, FeatureType_2_41, FeatureType_2_42 } from './enums.ts'
+
+export const TrackedEntityTypeBase_2_40 = z.object({
+  allowAuditLog: z.boolean().optional(),
+  code: z.string().max(50).optional(),
+  description: z.string().optional(),
+  featureType: FeatureType_2_40.optional(),
+  formName: z.string().optional(),
+  maxTeiCountToReturn: z.number().int().optional(),
+  minAttributesRequiredToSearch: z.number().int().optional(),
+  name: z.string().max(230),
+})
+
+export const TrackedEntityTypeBase_2_41 = z.object({
+  allowAuditLog: z.boolean().optional(),
+  code: z.string().max(50).optional(),
+  description: z.string().optional(),
+  featureType: FeatureType_2_41.optional(),
+  formName: z.string().optional(),
+  maxTeiCountToReturn: z.number().int().optional(),
+  minAttributesRequiredToSearch: z.number().int().optional(),
+  name: z.string().max(230),
+})
+
+export const TrackedEntityTypeBase_2_42 = z.object({
+  allowAuditLog: z.boolean().optional(),
+  code: z.string().max(50).optional(),
+  description: z.string().optional(),
+  enableChangeLog: z.boolean().optional(),
+  featureType: FeatureType_2_42.optional(),
+  formName: z.string().optional(),
+  maxTeiCountToReturn: z.number().int().optional(),
+  minAttributesRequiredToSearch: z.number().int().optional(),
+  name: z.string().max(230),
+  shortName: z.string().max(255),
+  trackedEntityTypesLabel: z.string().optional(),
+})
+
+export const TrackedEntityTypeBaseByTarget = {
+  '2.40': TrackedEntityTypeBase_2_40,
+  '2.41': TrackedEntityTypeBase_2_41,
+  '2.42': TrackedEntityTypeBase_2_42,
+} as const

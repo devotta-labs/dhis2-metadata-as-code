@@ -1,8 +1,11 @@
 import { z } from 'zod'
+import { ProgramStageBaseByTarget } from '../generated/programStage.ts'
+import { FeatureTypeByTarget, ValidationStrategy, ValidationStrategyByTarget } from '../generated/enums.ts'
+import { getTarget, type Target } from '../generated/runtime.ts'
+import type { CurrentTarget } from './currentTarget.ts'
 import {
   CodeSchema,
   DescriptionSchema,
-  FeatureType,
   NameSchema,
   ShortNameSchema,
   makeHandle,
@@ -12,7 +15,7 @@ import {
 } from './core.ts'
 import { SharingSchema } from './sharing.ts'
 
-export const ValidationStrategy = z.enum(['ON_COMPLETE', 'ON_UPDATE_AND_INSERT'])
+export { ValidationStrategy }
 
 const ProgramStageDataElementSchema = z.object({
   dataElement: refSchema('DataElement'),
@@ -25,7 +28,7 @@ const ProgramStageDataElementSchema = z.object({
   sortOrder: z.number().int().min(0).optional(),
 })
 
-export const ProgramStageSchema = z.object({
+const overridesFor = (target: Target) => ({
   code: CodeSchema,
   name: NameSchema,
   shortName: ShortNameSchema.optional(),
@@ -36,8 +39,8 @@ export const ProgramStageSchema = z.object({
   standardInterval: z.number().int().min(0).optional(),
   repeatable: z.boolean().default(false),
   autoGenerateEvent: z.boolean().default(true),
-  validationStrategy: ValidationStrategy.default('ON_COMPLETE'),
-  featureType: FeatureType.default('NONE'),
+  validationStrategy: ValidationStrategyByTarget[target].default('ON_COMPLETE'),
+  featureType: FeatureTypeByTarget[target].default('NONE'),
   blockEntryForm: z.boolean().default(false),
   preGenerateUID: z.boolean().default(false),
   remindCompleted: z.boolean().default(false),
@@ -54,10 +57,22 @@ export const ProgramStageSchema = z.object({
   sharing: SharingSchema.optional(),
 })
 
-export type ProgramStageInput = z.infer<typeof ProgramStageSchema>
-export type ProgramStage = Handle<'ProgramStage', ProgramStageInput & { shortName: string }>
+const SCHEMAS = {
+  '2.40': ProgramStageBaseByTarget['2.40'].extend(overridesFor('2.40')),
+  '2.41': ProgramStageBaseByTarget['2.41'].extend(overridesFor('2.41')),
+  '2.42': ProgramStageBaseByTarget['2.42'].extend(overridesFor('2.42')),
+} as const
 
-export function defineProgramStage(input: z.input<typeof ProgramStageSchema>): ProgramStage {
-  const parsed = ProgramStageSchema.parse(input)
+// Input/output types are narrowed to the target the user configured via
+// `declare-cli typegen`. Without typegen, CurrentTarget falls back to the
+// full Target union.
+export type ProgramStageInput = z.input<(typeof SCHEMAS)[CurrentTarget]>
+export type ProgramStage = Handle<
+  'ProgramStage',
+  z.output<(typeof SCHEMAS)[CurrentTarget]> & { shortName: string }
+>
+
+export function defineProgramStage(input: ProgramStageInput): ProgramStage {
+  const parsed = SCHEMAS[getTarget()].parse(input) as z.output<(typeof SCHEMAS)[CurrentTarget]>
   return makeHandle('ProgramStage', withDerivedShortName(parsed))
 }

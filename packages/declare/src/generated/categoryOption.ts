@@ -1,0 +1,48 @@
+// AUTO-GENERATED — do not edit by hand.
+//
+// Source: packages/declare/snapshots/schemas-<target>.json
+// Tool:   packages/declare/scripts/generate.ts
+//
+// Re-run `pnpm --filter @devotta-labs/declare gen:schemas` to refresh.
+
+import { z } from 'zod'
+import { refSchema } from '../lib/core.ts'
+
+export const CategoryOptionBase_2_40 = z.object({
+  code: z.string().max(50).optional(),
+  description: z.string().optional(),
+  endDate: z.string().optional(),
+  formName: z.string().max(230).optional(),
+  name: z.string().max(230),
+  organisationUnits: z.array(refSchema('OrganisationUnit')).optional(),
+  shortName: z.string().max(50),
+  startDate: z.string().optional(),
+})
+
+export const CategoryOptionBase_2_41 = z.object({
+  code: z.string().max(50).optional(),
+  description: z.string().optional(),
+  endDate: z.string().optional(),
+  formName: z.string().max(230).optional(),
+  name: z.string().max(230),
+  organisationUnits: z.array(refSchema('OrganisationUnit')).optional(),
+  shortName: z.string().max(50),
+  startDate: z.string().optional(),
+})
+
+export const CategoryOptionBase_2_42 = z.object({
+  code: z.string().max(50).optional(),
+  description: z.string().max(255).optional(),
+  endDate: z.string().optional(),
+  formName: z.string().max(230).optional(),
+  name: z.string().max(230),
+  organisationUnits: z.array(refSchema('OrganisationUnit')).optional(),
+  shortName: z.string().max(50),
+  startDate: z.string().optional(),
+})
+
+export const CategoryOptionBaseByTarget = {
+  '2.40': CategoryOptionBase_2_40,
+  '2.41': CategoryOptionBase_2_41,
+  '2.42': CategoryOptionBase_2_42,
+} as const

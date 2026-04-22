@@ -1,0 +1,70 @@
+// AUTO-GENERATED — do not edit by hand.
+//
+// Source: packages/declare/snapshots/schemas-<target>.json
+// Tool:   packages/declare/scripts/generate.ts
+//
+// Re-run `pnpm --filter @devotta-labs/declare gen:schemas` to refresh.
+
+import { z } from 'zod'
+import { refSchema } from '../lib/core.ts'
+import { AggregationType_2_40, AggregationType_2_41, AggregationType_2_42, DomainType_2_40, DomainType_2_41, DomainType_2_42, ValueType_2_40, ValueType_2_41, ValueType_2_42 } from './enums.ts'
+
+export const DataElementBase_2_40 = z.object({
+  aggregationLevels: z.array(z.number().int()).optional(),
+  aggregationType: AggregationType_2_40,
+  categoryCombo: refSchema('CategoryCombo'),
+  code: z.string().max(50).optional(),
+  commentOptionSet: refSchema('OptionSet').optional(),
+  description: z.string().optional(),
+  domainType: DomainType_2_40,
+  fieldMask: z.string().max(255).optional(),
+  formName: z.string().max(230).optional(),
+  name: z.string().max(230),
+  optionSet: refSchema('OptionSet').optional(),
+  shortName: z.string().max(50),
+  url: z.string().url().optional(),
+  valueType: ValueType_2_40,
+  zeroIsSignificant: z.boolean(),
+})
+
+export const DataElementBase_2_41 = z.object({
+  aggregationLevels: z.array(z.number().int()).optional(),
+  aggregationType: AggregationType_2_41,
+  categoryCombo: refSchema('CategoryCombo'),
+  code: z.string().max(50).optional(),
+  commentOptionSet: refSchema('OptionSet').optional(),
+  description: z.string().optional(),
+  domainType: DomainType_2_41,
+  fieldMask: z.string().max(255).optional(),
+  formName: z.string().max(230).optional(),
+  name: z.string().max(230),
+  optionSet: refSchema('OptionSet').optional(),
+  shortName: z.string().max(50),
+  url: z.string().url().optional(),
+  valueType: ValueType_2_41,
+  zeroIsSignificant: z.boolean(),
+})
+
+export const DataElementBase_2_42 = z.object({
+  aggregationLevels: z.array(z.number().int()).optional(),
+  aggregationType: AggregationType_2_42,
+  categoryCombo: refSchema('CategoryCombo'),
+  code: z.string().max(50).optional(),
+  commentOptionSet: refSchema('OptionSet').optional(),
+  description: z.string().optional(),
+  domainType: DomainType_2_42,
+  fieldMask: z.string().max(255).optional(),
+  formName: z.string().max(230).optional(),
+  name: z.string().max(230),
+  optionSet: refSchema('OptionSet').optional(),
+  shortName: z.string().max(50),
+  url: z.string().url().optional(),
+  valueType: ValueType_2_42,
+  zeroIsSignificant: z.boolean(),
+})
+
+export const DataElementBaseByTarget = {
+  '2.40': DataElementBase_2_40,
+  '2.41': DataElementBase_2_41,
+  '2.42': DataElementBase_2_42,
+} as const

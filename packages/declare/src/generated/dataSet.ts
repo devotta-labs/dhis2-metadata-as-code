@@ -1,0 +1,97 @@
+// AUTO-GENERATED — do not edit by hand.
+//
+// Source: packages/declare/snapshots/schemas-<target>.json
+// Tool:   packages/declare/scripts/generate.ts
+//
+// Re-run `pnpm --filter @devotta-labs/declare gen:schemas` to refresh.
+
+import { z } from 'zod'
+import { refSchema } from '../lib/core.ts'
+
+export const DataSetBase_2_40 = z.object({
+  categoryCombo: refSchema('CategoryCombo'),
+  code: z.string().max(50).optional(),
+  compulsoryFieldsCompleteOnly: z.boolean().optional(),
+  dataElementDecoration: z.boolean().optional(),
+  description: z.string().optional(),
+  expiryDays: z.number().int().optional(),
+  fieldCombinationRequired: z.boolean().optional(),
+  formName: z.string().optional(),
+  mobile: z.boolean(),
+  name: z.string().max(230),
+  notificationRecipients: refSchema('UserGroup').optional(),
+  notifyCompletingUser: z.boolean().optional(),
+  noValueRequiresComment: z.boolean().optional(),
+  openFuturePeriods: z.number().int().optional(),
+  openPeriodsAfterCoEndDate: z.number().int().optional(),
+  organisationUnits: z.array(refSchema('OrganisationUnit')).optional(),
+  periodType: z.string().max(255),
+  renderAsTabs: z.boolean().optional(),
+  renderHorizontally: z.boolean().optional(),
+  shortName: z.string().max(50),
+  skipOffline: z.boolean().optional(),
+  timelyDays: z.number().int().optional(),
+  validCompleteOnly: z.boolean().optional(),
+  version: z.number().int().optional(),
+})
+
+export const DataSetBase_2_41 = z.object({
+  categoryCombo: refSchema('CategoryCombo'),
+  code: z.string().max(50).optional(),
+  compulsoryFieldsCompleteOnly: z.boolean().optional(),
+  dataElementDecoration: z.boolean().optional(),
+  description: z.string().optional(),
+  expiryDays: z.number().int().optional(),
+  fieldCombinationRequired: z.boolean().optional(),
+  formName: z.string().optional(),
+  mobile: z.boolean(),
+  name: z.string().max(230),
+  notificationRecipients: refSchema('UserGroup').optional(),
+  notifyCompletingUser: z.boolean().optional(),
+  noValueRequiresComment: z.boolean().optional(),
+  openFuturePeriods: z.number().int().optional(),
+  openPeriodsAfterCoEndDate: z.number().int().optional(),
+  organisationUnits: z.array(refSchema('OrganisationUnit')).optional(),
+  periodType: z.string().max(255),
+  renderAsTabs: z.boolean().optional(),
+  renderHorizontally: z.boolean().optional(),
+  shortName: z.string().max(50),
+  skipOffline: z.boolean().optional(),
+  timelyDays: z.number().optional(),
+  validCompleteOnly: z.boolean().optional(),
+  version: z.number().int().optional(),
+})
+
+export const DataSetBase_2_42 = z.object({
+  categoryCombo: refSchema('CategoryCombo'),
+  code: z.string().max(50).optional(),
+  compulsoryFieldsCompleteOnly: z.boolean().optional(),
+  dataElementDecoration: z.boolean().optional(),
+  description: z.string().optional(),
+  displayOptions: z.string().max(50000).optional(),
+  expiryDays: z.number().optional(),
+  fieldCombinationRequired: z.boolean().optional(),
+  formName: z.string().optional(),
+  mobile: z.boolean(),
+  name: z.string().max(230),
+  notificationRecipients: refSchema('UserGroup').optional(),
+  notifyCompletingUser: z.boolean().optional(),
+  noValueRequiresComment: z.boolean().optional(),
+  openFuturePeriods: z.number().int().optional(),
+  openPeriodsAfterCoEndDate: z.number().int().optional(),
+  organisationUnits: z.array(refSchema('OrganisationUnit')).optional(),
+  periodType: z.string().max(255),
+  renderAsTabs: z.boolean().optional(),
+  renderHorizontally: z.boolean().optional(),
+  shortName: z.string().max(50),
+  skipOffline: z.boolean().optional(),
+  timelyDays: z.number().optional(),
+  validCompleteOnly: z.boolean().optional(),
+  version: z.number().int().optional(),
+})
+
+export const DataSetBaseByTarget = {
+  '2.40': DataSetBase_2_40,
+  '2.41': DataSetBase_2_41,
+  '2.42': DataSetBase_2_42,
+} as const

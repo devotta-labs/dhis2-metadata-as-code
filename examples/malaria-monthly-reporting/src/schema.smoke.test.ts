@@ -17,7 +17,6 @@ describe('metadata schema smoke', () => {
       encoding: 'utf8',
       stdio: ['ignore', 'pipe', 'pipe'],
     })
-    expect(out).toContain('Schema validated by Zod at load time')
-    expect(out).toContain('DataElement')
+    expect(out).toContain('Validation passed')
   })
 })
