@@ -1,0 +1,20 @@
+{
+  "name": "{{name}}",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "declare-cli start",
+    "stop": "declare-cli stop",
+    "reset": "declare-cli reset",
+    "status": "declare-cli status",
+    "logs": "declare-cli logs",
+    "check": "declare-cli check",
+    "plan": "declare-cli plan",
+    "apply": "declare-cli apply"
+  },
+  "dependencies": {
+    "@devotta-labs/declare": "{{declareDep}}",
+    "@devotta-labs/declare-cli": "{{declareDep}}"
+  }
+}
