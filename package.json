@@ -7,10 +7,14 @@
     "check": "turbo run check",
     "plan": "turbo run plan",
     "apply": "turbo run apply",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "changeset publish",
     "typecheck": "turbo run typecheck",
     "test": "turbo run test"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.29.7",
     "@types/node": "^22.9.0",
     "tsx": "^4.19.2",
     "turbo": "^2.5.8",
