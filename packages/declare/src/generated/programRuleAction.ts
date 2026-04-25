@@ -15,14 +15,14 @@ export const ProgramRuleActionBase_2_40 = z.object({
   data: z.string().optional(),
   dataElement: refSchema('DataElement').optional(),
   evaluationEnvironments: z.array(z.string()).optional(),
-  programRuleActionEvaluationTime: ProgramRuleActionEvaluationTime_2_40,
+  evaluationTime: ProgramRuleActionEvaluationTime_2_40,
   location: z.string().max(255).optional(),
   option: refSchema('Option').optional(),
   programRule: refSchema('ProgramRule').optional(),
   programRuleActionType: ProgramRuleActionType_2_40,
   programStage: refSchema('ProgramStage').optional(),
   templateUid: z.string().max(255).optional(),
-  attribute: refSchema('TrackedEntityAttribute').optional(),
+  trackedEntityAttribute: refSchema('TrackedEntityAttribute').optional(),
 })
 
 export const ProgramRuleActionBase_2_41 = z.object({
@@ -31,14 +31,14 @@ export const ProgramRuleActionBase_2_41 = z.object({
   data: z.string().optional(),
   dataElement: refSchema('DataElement').optional(),
   evaluationEnvironments: z.array(z.string()).optional(),
-  programRuleActionEvaluationTime: ProgramRuleActionEvaluationTime_2_41,
+  evaluationTime: ProgramRuleActionEvaluationTime_2_41,
   location: z.string().max(255).optional(),
   option: refSchema('Option').optional(),
   programRule: refSchema('ProgramRule').optional(),
   programRuleActionType: ProgramRuleActionType_2_41,
   programStage: refSchema('ProgramStage').optional(),
   templateUid: z.string().max(255).optional(),
-  attribute: refSchema('TrackedEntityAttribute').optional(),
+  trackedEntityAttribute: refSchema('TrackedEntityAttribute').optional(),
 })
 
 export const ProgramRuleActionBase_2_42 = z.object({
@@ -47,14 +47,14 @@ export const ProgramRuleActionBase_2_42 = z.object({
   data: z.string().optional(),
   dataElement: refSchema('DataElement').optional(),
   evaluationEnvironments: z.array(z.string()).optional(),
-  programRuleActionEvaluationTime: ProgramRuleActionEvaluationTime_2_42,
+  evaluationTime: ProgramRuleActionEvaluationTime_2_42,
   location: z.string().max(255).optional(),
   option: refSchema('Option').optional(),
   priority: z.number().int().optional(),
   programRule: refSchema('ProgramRule').optional(),
   programRuleActionType: ProgramRuleActionType_2_42,
   programStage: refSchema('ProgramStage').optional(),
-  attribute: refSchema('TrackedEntityAttribute').optional(),
+  trackedEntityAttribute: refSchema('TrackedEntityAttribute').optional(),
 })
 
 export const ProgramRuleActionBaseByTarget = {

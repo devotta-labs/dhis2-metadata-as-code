@@ -555,9 +555,13 @@ function stableEffect(effect: RuleEffectSpec): unknown {
   }
 }
 
+function sortedEffects(effects: unknown[]): unknown[] {
+  return [...effects].sort((a, b) => JSON.stringify(a).localeCompare(JSON.stringify(b)))
+}
+
 function assertRuleTest(evaluator: RuleEvaluator, test: RuleTest): RuleDiagnostic[] {
-  const actual = evaluator.evaluate(test.rule, test.given).map(stableEffect)
-  const expected = test.expect.map(stableEffect)
+  const actual = sortedEffects(evaluator.evaluate(test.rule, test.given).map(stableEffect))
+  const expected = sortedEffects(test.expect.map(stableEffect))
   if (JSON.stringify(actual) === JSON.stringify(expected)) return []
   return [
     {
