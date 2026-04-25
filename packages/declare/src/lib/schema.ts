@@ -1,4 +1,12 @@
-import { isHandle, stableUid, type Handle, type MetadataKind } from './core.ts'
+import { isHandle, stableUid, type Handle } from './core.ts'
+import {
+  AUTHORING_METADATA_KINDS,
+  ENTITY_DEFINITIONS,
+  METADATA_KINDS,
+  payloadKeyFor,
+  type AuthoringMetadataKind,
+  type MetadataKind,
+} from './entities.ts'
 import { toSharingPayload, type SharingInput } from './sharing.ts'
 import type { Category } from './category.ts'
 import type { CategoryOption } from './categoryOption.ts'
@@ -16,39 +24,28 @@ import type { TrackedEntityType } from './trackedEntityType.ts'
 import type { Program } from './program.ts'
 import type { ProgramStage } from './programStage.ts'
 
-export type AnyHandle =
-  | Category
-  | CategoryOption
-  | CategoryCombo
-  | OptionSet
-  | DataElement
-  | DataSet
-  | OrganisationUnit
-  | OrganisationUnitLevel
-  | UserRole
-  | UserGroup
-  | User
-  | TrackedEntityAttribute
-  | TrackedEntityType
-  | Program
-  | ProgramStage
+type HandleByKind = {
+  Category: Category
+  CategoryOption: CategoryOption
+  CategoryCombo: CategoryCombo
+  OptionSet: OptionSet
+  DataElement: DataElement
+  DataSet: DataSet
+  OrganisationUnit: OrganisationUnit
+  OrganisationUnitLevel: OrganisationUnitLevel
+  UserRole: UserRole
+  UserGroup: UserGroup
+  User: User
+  TrackedEntityAttribute: TrackedEntityAttribute
+  TrackedEntityType: TrackedEntityType
+  Program: Program
+  ProgramStage: ProgramStage
+}
+
+export type AnyHandle = HandleByKind[AuthoringMetadataKind]
 
 export type SchemaInput = {
-  categoryOptions?: readonly CategoryOption[]
-  categories?: readonly Category[]
-  categoryCombos?: readonly CategoryCombo[]
-  optionSets?: readonly OptionSet[]
-  dataElements?: readonly DataElement[]
-  dataSets?: readonly DataSet[]
-  organisationUnits?: readonly OrganisationUnit[]
-  organisationUnitLevels?: readonly OrganisationUnitLevel[]
-  userRoles?: readonly UserRole[]
-  userGroups?: readonly UserGroup[]
-  users?: readonly User[]
-  trackedEntityAttributes?: readonly TrackedEntityAttribute[]
-  trackedEntityTypes?: readonly TrackedEntityType[]
-  programs?: readonly Program[]
-  programStages?: readonly ProgramStage[]
+  [K in AuthoringMetadataKind as (typeof ENTITY_DEFINITIONS)[K]['payloadKey']]?: readonly HandleByKind[K][]
 }
 
 export type Schema = {
@@ -56,23 +53,10 @@ export type Schema = {
   serialize(): Record<string, unknown[]>
 }
 
-const PAYLOAD_KEY: Record<MetadataKind, string> = {
-  Category: 'categories',
-  CategoryOption: 'categoryOptions',
-  CategoryCombo: 'categoryCombos',
-  OptionSet: 'optionSets',
-  Option: 'options',
-  DataElement: 'dataElements',
-  DataSet: 'dataSets',
-  OrganisationUnit: 'organisationUnits',
-  OrganisationUnitLevel: 'organisationUnitLevels',
-  UserRole: 'userRoles',
-  UserGroup: 'userGroups',
-  User: 'users',
-  TrackedEntityAttribute: 'trackedEntityAttributes',
-  TrackedEntityType: 'trackedEntityTypes',
-  Program: 'programs',
-  ProgramStage: 'programStages',
+function emptyByKind(): Record<MetadataKind, Handle<MetadataKind, { code: string }>[]> {
+  const out = {} as Record<MetadataKind, Handle<MetadataKind, { code: string }>[]>
+  for (const kind of METADATA_KINDS) out[kind] = []
+  return out
 }
 
 // DHIS2 master validation hooks crash on transient objects with null UIDs; supply
@@ -139,45 +123,11 @@ function toPayload(value: unknown): unknown {
 }
 
 export function defineSchema(input: SchemaInput): Schema {
-  const byKind: Record<MetadataKind, Handle<MetadataKind, { code: string }>[]> = {
-    Category: [],
-    CategoryOption: [],
-    CategoryCombo: [],
-    OptionSet: [],
-    Option: [],
-    DataElement: [],
-    DataSet: [],
-    OrganisationUnit: [],
-    OrganisationUnitLevel: [],
-    UserRole: [],
-    UserGroup: [],
-    User: [],
-    TrackedEntityAttribute: [],
-    TrackedEntityType: [],
-    Program: [],
-    ProgramStage: [],
-  }
-
-  const groups: readonly (readonly AnyHandle[] | undefined)[] = [
-    input.categoryOptions,
-    input.categories,
-    input.categoryCombos,
-    input.optionSets,
-    input.dataElements,
-    input.dataSets,
-    input.organisationUnits,
-    input.organisationUnitLevels,
-    input.userRoles,
-    input.userGroups,
-    input.users,
-    input.trackedEntityAttributes,
-    input.trackedEntityTypes,
-    input.programs,
-    input.programStages,
-  ]
+  const byKind = emptyByKind()
 
   const seen = new Set<string>()
-  for (const group of groups) {
+  for (const kind of AUTHORING_METADATA_KINDS) {
+    const group = input[payloadKeyFor(kind)] as readonly AnyHandle[] | undefined
     if (!group) continue
     for (const handle of group) {
       const key = `${handle.kind}:${handle.code}`
@@ -206,11 +156,11 @@ export function defineSchema(input: SchemaInput): Schema {
     serialize() {
       const payload: Record<string, unknown[]> = {}
       const hoistedOptions: Record<string, unknown>[] = []
-      for (const kind of Object.keys(byKind) as MetadataKind[]) {
+      for (const kind of METADATA_KINDS) {
         const items = byKind[kind]
         if (items.length === 0) continue
         if (kind === 'OptionSet') {
-          payload[PAYLOAD_KEY[kind]] = items.map((h) => {
+          payload[payloadKeyFor(kind)] = items.map((h) => {
             const rawInput = h.input as Record<string, unknown>
             const originalSharing = rawInput.sharing as SharingInput | undefined
             const bodyWithoutSharing = { ...rawInput }
@@ -224,7 +174,7 @@ export function defineSchema(input: SchemaInput): Schema {
             return sharingPayload ? { ...optionSet, sharing: sharingPayload } : optionSet
           })
         } else {
-          payload[PAYLOAD_KEY[kind]] = items.map((h) => {
+          payload[payloadKeyFor(kind)] = items.map((h) => {
             // Extract sharing before toPayload recurses — the handle → ref
             // conversion strips the brands toSharingPayload needs.
             const rawInput = h.input as Record<string, unknown>
@@ -247,7 +197,7 @@ export function defineSchema(input: SchemaInput): Schema {
           })
         }
       }
-      if (hoistedOptions.length > 0) payload[PAYLOAD_KEY.Option] = hoistedOptions
+      if (hoistedOptions.length > 0) payload[payloadKeyFor('Option')] = hoistedOptions
       return payload
     },
   }

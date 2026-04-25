@@ -30,6 +30,19 @@ export {
   type SharingInput,
 } from './sharing.ts'
 export { defineSchema, type Schema, type AnyHandle } from './schema.ts'
+export {
+  AUTHORING_METADATA_KINDS,
+  ENTITY_DEFINITIONS,
+  ENTITY_SCHEMA_TO_KIND,
+  KLASS_TO_KIND,
+  METADATA_KINDS,
+  PAYLOAD_KEY_BY_KIND,
+  kindForKlass,
+  labelForKlass,
+  payloadKeyFor,
+  type AuthoringMetadataKind,
+  type MetadataKind,
+} from './entities.ts'
 
 export {
   TARGETS,

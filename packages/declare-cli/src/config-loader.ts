@@ -2,7 +2,7 @@ import { existsSync } from 'node:fs'
 import { dirname, isAbsolute, resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { createJiti } from 'jiti'
-import { setTarget, type Schema } from '@devotta-labs/declare'
+import { withTarget, type Schema } from '@devotta-labs/declare'
 import { ConfigSchema, type DeclareConfig } from './config.ts'
 
 const CONFIG_FILENAMES = ['declare.config.ts', 'declare.config.mjs', 'declare.config.js']
@@ -70,21 +70,22 @@ export async function loadSchema(loaded: LoadedConfig): Promise<Schema> {
     )
   }
 
-  // Set the target before the user schema file imports defineX(), so the
-  // right per-version Zod validator is selected at parse time.
-  setTarget(loaded.config.target)
+  // Scope the target before the user schema file imports defineX(), so the
+  // right per-version Zod validator is selected at parse time without leaking
+  // that target to later schema loads.
+  return await withTarget(loaded.config.target, async () => {
+    const mod = await jiti.import<unknown>(pathToFileURL(schemaPath).href)
+    const schema =
+      mod && typeof mod === 'object' && 'default' in mod
+        ? (mod as { default: unknown }).default
+        : mod
 
-  const mod = await jiti.import<unknown>(pathToFileURL(schemaPath).href)
-  const schema =
-    mod && typeof mod === 'object' && 'default' in mod
-      ? (mod as { default: unknown }).default
-      : mod
+    if (!schema || typeof schema !== 'object' || typeof (schema as Schema).serialize !== 'function') {
+      throw new Error(
+        `Schema module at ${schemaPath} must have a default export created by \`defineSchema(...)\`.`,
+      )
+    }
 
-  if (!schema || typeof schema !== 'object' || typeof (schema as Schema).serialize !== 'function') {
-    throw new Error(
-      `Schema module at ${schemaPath} must have a default export created by \`defineSchema(...)\`.`,
-    )
-  }
-
-  return schema as Schema
+    return schema as Schema
+  })
 }

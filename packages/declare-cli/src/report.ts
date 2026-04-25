@@ -1,3 +1,5 @@
+import { labelForKlass } from '@devotta-labs/declare'
+
 export type Stats = {
   created?: number
   updated?: number
@@ -32,19 +34,9 @@ export type ImportReport = {
   typeReports?: TypeReport[]
 }
 
-const KLASS_LABEL: Record<string, string> = {
-  'org.hisp.dhis.category.Category': 'Category',
-  'org.hisp.dhis.category.CategoryOption': 'CategoryOption',
-  'org.hisp.dhis.category.CategoryCombo': 'CategoryCombo',
-  'org.hisp.dhis.option.OptionSet': 'OptionSet',
-  'org.hisp.dhis.option.Option': 'Option',
-  'org.hisp.dhis.dataelement.DataElement': 'DataElement',
-  'org.hisp.dhis.dataset.DataSet': 'DataSet',
-}
-
 function label(klass: string | undefined): string {
   if (!klass) return 'Unknown'
-  return KLASS_LABEL[klass] ?? klass.split('.').pop() ?? klass
+  return labelForKlass(klass)
 }
 
 export function printReport(report: ImportReport, title: string): void {
