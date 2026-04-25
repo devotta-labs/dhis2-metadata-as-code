@@ -1,26 +1,7 @@
 import { createHash } from 'node:crypto'
 import { z } from 'zod'
-
-export type MetadataKind =
-  | 'Category'
-  | 'CategoryOption'
-  | 'CategoryCombo'
-  | 'OptionSet'
-  | 'Option'
-  | 'DataElement'
-  | 'DataSet'
-  | 'OrganisationUnit'
-  | 'OrganisationUnitLevel'
-  | 'UserRole'
-  | 'UserGroup'
-  | 'User'
-  | 'TrackedEntityAttribute'
-  | 'TrackedEntityType'
-  | 'Program'
-  | 'ProgramStage'
-  | 'ProgramRuleVariable'
-  | 'ProgramRuleAction'
-  | 'ProgramRule'
+import type { MetadataKind } from './entities.ts'
+export type { MetadataKind } from './entities.ts'
 
 declare const __kind: unique symbol
 declare const __brand: unique symbol
