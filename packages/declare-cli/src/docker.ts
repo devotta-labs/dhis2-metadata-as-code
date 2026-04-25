@@ -95,6 +95,63 @@ export async function composeDownWipe(env: StackEnv): Promise<void> {
   }
 }
 
+export async function composeStopService(env: StackEnv, service: string): Promise<void> {
+  try {
+    await execa('docker', composeArgs(env, 'stop', service), {
+      env: envFor(env),
+      stdio: 'pipe',
+    })
+  } catch (err) {
+    rethrowDockerError(err, `docker compose stop ${service}`)
+  }
+}
+
+export async function composeStartService(env: StackEnv, service: string): Promise<void> {
+  try {
+    await execa('docker', composeArgs(env, 'start', service), {
+      env: envFor(env),
+      stdio: 'pipe',
+    })
+  } catch (err) {
+    rethrowDockerError(err, `docker compose start ${service}`)
+  }
+}
+
+export function resolveDhis2Image(env: StackEnv): string {
+  return env.image ?? process.env.DHIS2_IMAGE ?? 'dhis2/core-dev:latest'
+}
+
+export async function execSqlOnDb(
+  env: StackEnv,
+  sql: string,
+  opts: { database?: string } = {},
+): Promise<string> {
+  const database = opts.database ?? 'postgres'
+  const args = composeArgs(
+    env,
+    'exec',
+    '-T',
+    'db',
+    'psql',
+    '--no-password',
+    '-U',
+    'dhis',
+    '-d',
+    database,
+    '-v',
+    'ON_ERROR_STOP=1',
+    '-At',
+    '-c',
+    sql,
+  )
+  try {
+    const { stdout } = await execa('docker', args, { env: envFor(env) })
+    return stdout
+  } catch (err) {
+    rethrowDockerError(err, 'psql exec')
+  }
+}
+
 export async function composeLogs(
   env: StackEnv,
   opts: { service?: 'web' | 'db'; follow?: boolean } = {},
