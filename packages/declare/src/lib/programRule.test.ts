@@ -106,4 +106,37 @@ describe('program rules', () => {
       }),
     ).toThrow(/SCHEDULEEVENT/)
   })
+
+  it('keeps generated action codes unique when long rule codes share a prefix', () => {
+    const firstRule = defineProgramRule({
+      code: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ_ABCDEFGHI_X',
+      name: 'First long code rule',
+      program,
+      condition: 'true',
+      actions: [action.showWarning({ on: age, content: 'First' })],
+    })
+    const secondRule = defineProgramRule({
+      code: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ_ABCDEFGHI_Y',
+      name: 'Second long code rule',
+      program,
+      condition: 'true',
+      actions: [action.showWarning({ on: age, content: 'Second' })],
+    })
+
+    const firstAction = firstRule.input.programRuleActions[0]
+    const secondAction = secondRule.input.programRuleActions[0]
+
+    expect(firstAction?.code).toMatch(/^[A-Z][A-Z0-9_]{0,49}$/)
+    expect(secondAction?.code).toMatch(/^[A-Z][A-Z0-9_]{0,49}$/)
+    expect(firstAction?.code).not.toBe(secondAction?.code)
+    expect(() =>
+      defineSchema({
+        organisationUnits: [ou],
+        dataElements: [age],
+        programStages: [stage],
+        programs: [program],
+        programRules: [firstRule, secondRule],
+      }),
+    ).not.toThrow()
+  })
 })

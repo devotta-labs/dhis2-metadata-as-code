@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto'
 import { z } from 'zod'
 import { ValueTypeByTarget } from '../generated/enums.ts'
 import type { ValueType } from '../generated/enums.ts'
@@ -564,9 +565,14 @@ export type ProgramRule = Handle<'ProgramRule', ProgramRuleOutput>
 
 function generatedActionCode(ruleCode: string, actionType: ProgramRuleActionType, index: number): string {
   const suffix = `_${index + 1}_${actionType}`
-  const maxRuleCodeLength = 50 - suffix.length
-  const base = ruleCode.slice(0, Math.max(1, maxRuleCodeLength))
-  return `${base}${suffix}`.slice(0, 50)
+  const maxReadableLength = 50 - suffix.length
+  if (ruleCode.length <= maxReadableLength) return `${ruleCode}${suffix}`
+
+  const hash = createHash('sha256').update(ruleCode).digest('hex').slice(0, 6).toUpperCase()
+  const hashSuffix = `_${hash}`
+  const maxHashedLength = 50 - hashSuffix.length - suffix.length
+  const base = ruleCode.slice(0, Math.max(1, maxHashedLength))
+  return `${base}${hashSuffix}${suffix}`
 }
 
 export function defineProgramRule(input: ProgramRuleInput): ProgramRule {
