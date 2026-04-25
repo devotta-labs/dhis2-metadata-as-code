@@ -2,7 +2,11 @@
 // deliberately kept in one place so that additions by upstream DHIS2 versions
 // fail loudly rather than being guessed at.
 
-import type { MetadataKind } from '../../src/lib/core.ts'
+import {
+  ENTITY_SCHEMA_TO_KIND,
+  KLASS_TO_KIND as REGISTRY_KLASS_TO_KIND,
+  type MetadataKind,
+} from '../../src/lib/entities.ts'
 
 /** DHIS2 stable targets we generate Zod validators for. */
 export const TARGETS = ['2.40', '2.41', '2.42'] as const
@@ -18,50 +22,16 @@ export const DEFAULT_TARGET: Target = '2.42'
  * the snapshot is ignored. Keep the left-hand side lowerCamelCase to match
  * `schema.name` in the DHIS2 payload.
  */
-export const ENTITY_SCHEMAS: Readonly<Record<string, MetadataKind>> = {
-  category: 'Category',
-  categoryOption: 'CategoryOption',
-  categoryCombo: 'CategoryCombo',
-  optionSet: 'OptionSet',
-  option: 'Option',
-  dataElement: 'DataElement',
-  dataSet: 'DataSet',
-  organisationUnit: 'OrganisationUnit',
-  organisationUnitLevel: 'OrganisationUnitLevel',
-  userRole: 'UserRole',
-  userGroup: 'UserGroup',
-  user: 'User',
-  trackedEntityAttribute: 'TrackedEntityAttribute',
-  trackedEntityType: 'TrackedEntityType',
-  program: 'Program',
-  programStage: 'ProgramStage',
-}
+export const ENTITY_SCHEMAS: Readonly<Record<string, MetadataKind>> = ENTITY_SCHEMA_TO_KIND
 
 /**
  * Java class → MetadataKind for REFERENCE / COLLECTION itemKlass properties.
  *
  * Limited to kinds the authoring DSL supports. A REFERENCE whose klass is not
- * listed is emitted as `z.unknown().optional()` and logged — the generator
- * never silently drops a field.
+ * listed fails generation unless the field is explicitly skipped below. The
+ * generator never silently drops a field.
  */
-export const KLASS_TO_KIND: Readonly<Record<string, MetadataKind>> = {
-  'org.hisp.dhis.category.Category': 'Category',
-  'org.hisp.dhis.category.CategoryOption': 'CategoryOption',
-  'org.hisp.dhis.category.CategoryCombo': 'CategoryCombo',
-  'org.hisp.dhis.option.OptionSet': 'OptionSet',
-  'org.hisp.dhis.option.Option': 'Option',
-  'org.hisp.dhis.dataelement.DataElement': 'DataElement',
-  'org.hisp.dhis.dataset.DataSet': 'DataSet',
-  'org.hisp.dhis.organisationunit.OrganisationUnit': 'OrganisationUnit',
-  'org.hisp.dhis.organisationunit.OrganisationUnitLevel': 'OrganisationUnitLevel',
-  'org.hisp.dhis.user.UserRole': 'UserRole',
-  'org.hisp.dhis.user.UserGroup': 'UserGroup',
-  'org.hisp.dhis.user.User': 'User',
-  'org.hisp.dhis.trackedentity.TrackedEntityAttribute': 'TrackedEntityAttribute',
-  'org.hisp.dhis.trackedentity.TrackedEntityType': 'TrackedEntityType',
-  'org.hisp.dhis.program.Program': 'Program',
-  'org.hisp.dhis.program.ProgramStage': 'ProgramStage',
-}
+export const KLASS_TO_KIND: Readonly<Record<string, MetadataKind>> = REGISTRY_KLASS_TO_KIND
 
 /**
  * System-managed fields the authoring layer must never set directly.
@@ -107,6 +77,7 @@ export const GLOBAL_SKIP_FIELDS: ReadonlySet<string> = new Set([
   'externalAccess',
   'userAccesses',
   'userGroupAccesses',
+  'sharing',
 
   // complex types without hand-written Zod support (yet)
   'style',
@@ -126,16 +97,23 @@ export const ENTITY_SKIP_FIELDS: Readonly<Record<MetadataKind, ReadonlySet<strin
   CategoryCombo: new Set<string>(),
   OptionSet: new Set<string>(['options']),                       // hand layer hoists options
   Option: new Set<string>(),
-  DataElement: new Set<string>(),
+  DataElement: new Set<string>([
+    'legendSets',                                                 // not in DSL surface
+  ]),
   DataSet: new Set<string>([
     'dataSetElements',                                            // typed { dataElement, categoryCombo }
+    'dataEntryForm',                                              // not in DSL surface
     'dataInputPeriods',                                           // complex collection, TODO
     'compulsoryDataElementOperands',                              // complex collection
+    'workflow',                                                   // not in DSL surface
     'indicators',                                                 // not in DSL surface
     'legendSets',
     'sections',
   ]),
-  OrganisationUnit: new Set<string>(['children']),                // computed
+  OrganisationUnit: new Set<string>([
+    'children',                                                   // computed
+    'image',                                                      // file resource support not in DSL surface
+  ]),
   OrganisationUnitLevel: new Set<string>(),
   UserRole: new Set<string>(['members', 'users']),                // set server-side via users.userRoles
   UserGroup: new Set<string>(['managedGroups', 'managedByGroups']),
@@ -154,6 +132,8 @@ export const ENTITY_SKIP_FIELDS: Readonly<Record<MetadataKind, ReadonlySet<strin
     'trackedEntityTypeAttributes',                                // typed sub-schema
   ]),
   Program: new Set<string>([
+    'dataEntryForm',                                              // not in DSL surface
+    'expiryPeriodType',                                           // complex PeriodType, not in DSL surface
     'programStages',                                              // typed ref[]
     'programTrackedEntityAttributes',                             // typed sub-schema
     'programSections',                                            // not in DSL surface
@@ -164,6 +144,7 @@ export const ENTITY_SKIP_FIELDS: Readonly<Record<MetadataKind, ReadonlySet<strin
     'userRoles',                                                  // access control via sharing
   ]),
   ProgramStage: new Set<string>([
+    'dataEntryForm',                                              // not in DSL surface
     'programStageDataElements',                                   // typed sub-schema
     'programStageSections',
     'notificationTemplates',

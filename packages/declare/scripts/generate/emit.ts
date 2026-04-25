@@ -1,4 +1,4 @@
-import type { MetadataKind } from '../../src/lib/core.ts'
+import type { MetadataKind } from '../../src/lib/entities.ts'
 import { DEFAULT_TARGET, ENTITY_SCHEMAS, KLASS_TO_KIND, TARGETS } from './config.ts'
 import type { Target } from './config.ts'
 import type { EntityCollection, EntityByTarget } from './collect.ts'
@@ -68,6 +68,24 @@ function emitScalar(prop: SnapshotProperty, target: Target): string | null {
     case 'COLLECTION':
       return emitCollection(prop, target)
   }
+}
+
+function unsupportedPropertyMessage(
+  kind: MetadataKind,
+  target: Target,
+  prop: SnapshotProperty,
+): string {
+  const parts = [
+    `propertyType=${prop.propertyType}`,
+    prop.klass ? `klass=${prop.klass}` : null,
+    prop.itemPropertyType ? `itemPropertyType=${prop.itemPropertyType}` : null,
+    prop.itemKlass ? `itemKlass=${prop.itemKlass}` : null,
+  ].filter((p): p is string => p !== null)
+
+  return [
+    `Cannot emit ${kind}.${apiFieldName(prop)} for DHIS2 ${target} (${parts.join(', ')}).`,
+    'Add emitter support, map its klass in KLASS_TO_KIND, or add an explicit skip in generate/config.ts if the hand layer owns it.',
+  ].join(' ')
 }
 
 function emitCollection(prop: SnapshotProperty, target: Target): string | null {
@@ -168,7 +186,9 @@ export function emitEntity(
     const lines: string[] = []
     for (const prop of props) {
       const expr = emitScalar(prop, target)
-      if (expr === null) continue
+      if (expr === null) {
+        throw new Error(unsupportedPropertyMessage(kind, target, prop))
+      }
       if (expr.includes('refSchema(')) usesRefSchema = true
       // Track enum usage only when a per-target enum identifier actually
       // appears in the emitted expression — CONSTANT / itemPropertyType=CONSTANT
@@ -252,17 +272,19 @@ export function emitTargets(): string {
 export function emitRuntime(): string {
   return [
     BANNER,
+    "import { AsyncLocalStorage } from 'node:async_hooks'",
     "import { DEFAULT_TARGET, type Target } from './targets.ts'",
     "export type { Target } from './targets.ts'",
     '',
-    '// Mutable module-level setting; declare-cli sets this before loading',
-    '// the user schema so defineX() can pick the right Zod validator. Library',
-    '// users who import defineX directly get DEFAULT_TARGET unless they call',
-    '// setTarget() or wrap their code in withTarget().',
+    '// Process-wide fallback target. Library users who import defineX directly',
+    '// get DEFAULT_TARGET unless they call setTarget() or wrap their code in',
+    '// withTarget(). Async callers should prefer withTarget() so overlapping',
+    '// schema loads do not race through this fallback.',
     'let current: Target = DEFAULT_TARGET',
+    'const targetStorage = new AsyncLocalStorage<Target>()',
     '',
     'export function getTarget(): Target {',
-    '  return current',
+    '  return targetStorage.getStore() ?? current',
     '}',
     '',
     'export function setTarget(target: Target): void {',
@@ -270,42 +292,12 @@ export function emitRuntime(): string {
     '}',
     '',
     '/**',
-    ' * Run `fn` with `target` active, then restore the previous value. Works',
-    ' * for both sync and async callbacks: if `fn` returns a thenable, the',
-    ' * previous target is restored when the promise settles rather than',
-    ' * synchronously, so `defineX()` calls after an `await` still see `target`.',
+    ' * Run `fn` with `target` active for this async execution context.',
+    ' * Synchronous callbacks return synchronously; async callbacks keep the',
+    ' * target across awaits without changing the process-wide fallback.',
     ' */',
     'export function withTarget<T>(target: Target, fn: () => T): T {',
-    '  const prev = current',
-    '  current = target',
-    '  try {',
-    '    const result = fn()',
-    '    if (isThenable(result)) {',
-    '      return result.then(',
-    '        (value) => {',
-    '          current = prev',
-    '          return value',
-    '        },',
-    '        (err) => {',
-    '          current = prev',
-    '          throw err',
-    '        },',
-    '      ) as T',
-    '    }',
-    '    current = prev',
-    '    return result',
-    '  } catch (err) {',
-    '    current = prev',
-    '    throw err',
-    '  }',
-    '}',
-    '',
-    'function isThenable<T>(value: T): value is T & PromiseLike<unknown> {',
-    '  return (',
-    '    value !== null &&',
-    '    (typeof value === "object" || typeof value === "function") &&',
-    "    typeof (value as { then?: unknown }).then === 'function'",
-    '  )',
+    '  return targetStorage.run(target, fn)',
     '}',
     '',
   ].join('\n')

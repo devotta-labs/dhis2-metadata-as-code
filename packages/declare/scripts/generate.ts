@@ -23,7 +23,7 @@ import {
   emitTargets,
 } from './generate/emit.ts'
 import { ENTITY_SCHEMAS } from './generate/config.ts'
-import type { MetadataKind } from '../src/lib/core.ts'
+import type { MetadataKind } from '../src/lib/entities.ts'
 import type { Snapshot } from './generate/snapshot.ts'
 
 const HERE = dirname(fileURLToPath(import.meta.url))

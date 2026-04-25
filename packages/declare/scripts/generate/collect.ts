@@ -1,4 +1,4 @@
-import type { MetadataKind } from '../../src/lib/core.ts'
+import type { MetadataKind } from '../../src/lib/entities.ts'
 import { ENTITY_SCHEMAS, ENTITY_SKIP_FIELDS, GLOBAL_SKIP_FIELDS } from './config.ts'
 import type { Target } from './config.ts'
 import type { Snapshot, SnapshotProperty, SnapshotSchema } from './snapshot.ts'

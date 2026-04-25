@@ -4,7 +4,7 @@ import { defineOptionSet } from './optionSet.ts'
 import { defineTrackedEntityAttribute } from './trackedEntityAttribute.ts'
 import { stableUid } from './core.ts'
 import { DEFAULT_TARGET } from '../generated/targets.ts'
-import { setTarget } from '../generated/runtime.ts'
+import { getTarget, setTarget, withTarget } from '../generated/runtime.ts'
 
 describe('stableUid', () => {
   it('produces an 11-char DHIS2 UID that starts with a letter and is deterministic', () => {
@@ -107,5 +107,28 @@ describe('target-versioned valueType enforcement', () => {
         valueType: 'TRACKER_ASSOCIATE',
       }),
     ).toThrow(/valueType/)
+  })
+})
+
+describe('target context', () => {
+  afterEach(() => setTarget(DEFAULT_TARGET))
+
+  it('isolates overlapping async withTarget calls', async () => {
+    const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
+    const [first, second] = await Promise.all([
+      withTarget('2.40', async () => {
+        await wait(10)
+        return getTarget()
+      }),
+      withTarget('2.42', async () => {
+        await wait(1)
+        return getTarget()
+      }),
+    ])
+
+    expect(first).toBe('2.40')
+    expect(second).toBe('2.42')
+    expect(getTarget()).toBe(DEFAULT_TARGET)
   })
 })
