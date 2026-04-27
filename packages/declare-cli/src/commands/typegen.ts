@@ -3,10 +3,22 @@ import { resolve } from 'node:path'
 import type { Target } from '@devotta-labs/declare'
 import type { LoadedConfig } from '../config-loader.ts'
 import { pc, ui } from '../ui.ts'
+import { expectNoArgs } from './args.ts'
 
 const ENV_FILE = 'declare-env.d.ts'
 
-export async function typegen(loaded: LoadedConfig, _args: readonly string[] = []): Promise<void> {
+/**
+ * Write the declare-env.d.ts that narrows @devotta-labs/declare's
+ * `ConfiguredTargets` interface to the single target configured in
+ * declare.config.ts. Authoring types in defineX() resolve via CurrentTarget,
+ * so `valueType: 'TRACKER_ASSOCIATE'` now fails `tsc --noEmit` on a 2.42
+ * project without needing to run `declare-cli check` first.
+ *
+ * Safe to run on every invocation: we read the existing file and skip writing
+ * if the contents are unchanged, so TS's incremental build isn't invalidated.
+ */
+export async function typegen(loaded: LoadedConfig, args: readonly string[] = []): Promise<void> {
+  expectNoArgs('typegen', args)
   await writeDeclareEnv(loaded.projectRoot, loaded.config.target)
 }
 
