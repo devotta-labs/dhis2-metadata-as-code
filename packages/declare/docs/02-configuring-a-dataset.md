@@ -1,6 +1,6 @@
 # Configuring a Dataset
 
-This guide walks through defining an aggregate data set — the kind used for periodic facility reporting. All examples reference the [malaria-monthly-reporting](../examples/malaria-monthly-reporting) project.
+This guide walks through defining an aggregate data set — the kind used for periodic facility reporting. All examples reference the [malaria-monthly-reporting](https://github.com/devotta-labs/declare-cli/tree/main/examples/malaria-monthly-reporting) project.
 
 ## Option Sets
 

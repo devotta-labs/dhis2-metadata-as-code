@@ -1,6 +1,6 @@
 # Tracker and Event Programs
 
-This guide covers both tracker programs (`WITH_REGISTRATION`) and event programs (`WITHOUT_REGISTRATION`). All examples reference the [tb-tracker](../examples/tb-tracker) project.
+This guide covers both tracker programs (`WITH_REGISTRATION`) and event programs (`WITHOUT_REGISTRATION`). All examples reference the [tb-tracker](https://github.com/devotta-labs/declare-cli/tree/main/examples/tb-tracker) project.
 
 ## Program Types
 

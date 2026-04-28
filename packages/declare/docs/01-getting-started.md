@@ -95,5 +95,5 @@ Projects expose these as npm scripts too, so `pnpm start`, `pnpm check`, etc. wo
 
 The repo ships two complete examples you can use as reference:
 
-- [`examples/malaria-monthly-reporting`](../examples/malaria-monthly-reporting) — aggregate data set with categories and disaggregation.
-- [`examples/tb-tracker`](../examples/tb-tracker) — tracker program with tracked entity types, attributes, and program stages.
+- [`examples/malaria-monthly-reporting`](https://github.com/devotta-labs/declare-cli/tree/main/examples/malaria-monthly-reporting) — aggregate data set with categories and disaggregation.
+- [`examples/tb-tracker`](https://github.com/devotta-labs/declare-cli/tree/main/examples/tb-tracker) — tracker program with tracked entity types, attributes, and program stages.
