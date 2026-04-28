@@ -2,6 +2,10 @@
 
 This project declares DHIS2 metadata in TypeScript with `@devotta-labs/declare` and uses `@devotta-labs/declare-cli` to validate and apply it against a local DHIS2.
 
+## MANDATORY: Read the docs first
+
+Before doing ANY work you MUST read `node_modules/@devotta-labs/declare/docs/01-getting-started.md`. If the task involves datasets, tracker programs, event programs, or program rules, also read the relevant doc in that directory (`02-configuring-a-dataset.md`, `03-tracker-and-event-programs.md`, `04-program-rules.md`).
+
 ## Library source
 
 Both libraries ship their TypeScript sources with the published package — read them directly when you need ground truth on what's exported and how validation is wired:

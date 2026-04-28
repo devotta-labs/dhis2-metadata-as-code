@@ -31,6 +31,7 @@
   "files": [
     "src",
     "!src/**/*.test.ts",
+    "docs",
     "README.md",
     "LICENSE"
   ],
